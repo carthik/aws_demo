@@ -1,26 +1,22 @@
 class aws_demo::pe_master {
-  $pe_version_string = '2015.2.0'
-  $pe_password = 'puppetlabs'
-  $whoami = 'carthik'
-
-  if versioncmp($pe_version_string, '3.7.0') >= 0 {
-    # PE > 3.7 doesn't like email usernames
-    $pe_username = 'admin'
-  }
-  else {
-    $pe_username = 'admin@puppetlabs.com'
-  }
+  $creator     = $aws_demo::creator
+  $key_pair    = $aws_demo::key_pair
+  $pe_version  = $aws_demo::pe_version
+  $pe_username = $aws_demo::pe_username
+  $pe_password = $aws_demo::pe_password
+  $aws_region  = $aws_demo::aws_region
 
   ec2_instance { 'puppet-master':
     ensure                      => present,
     associate_public_ip_address => true,
-    region                      => 'us-west-2',
+    region                      => $aws_region,
     image_id                    => 'ami-e08efbd0',
     instance_type               => 'm3.medium',
-    key_name                    => 'aws_demo',
-    security_groups             => ["${whoami}-sg"],
-    subnet                      => "${whoami}-subnet",
+    key_name                    => $key_pair,
+    security_groups             => ["${creator}-sg"],
+    subnet                      => "${creator}-subnet",
     monitoring                  => 'true',
     user_data                   => template('aws_demo/master-pe-userdata.erb'),
   }
+
 }

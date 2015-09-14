@@ -1,1 +1,3 @@
-include aws_demo::vpc
+class { 'aws_demo::vpc':
+  creator => 'example_user',
+}
